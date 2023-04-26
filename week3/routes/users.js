@@ -35,7 +35,7 @@ router.get("/", async (req, res, next) => {
   page = page ? Number(page) : 0;
   perPage = perPage ? Number(perPage) : 10;
   // TODO use query in search, if available
-  const users = await userDAO.getAll(page, perPage);
+  const users = await userDAO.getAll(page, perPage, query);
   res.json(users);
 });
 

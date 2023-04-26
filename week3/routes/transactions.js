@@ -25,7 +25,7 @@ router.get("/stats", async (req, res, next) => {
   const userId = req.params.userId;
   const { start, end } = req.query;
   // TODO populate stats with real data
-  const stats = {}
+  const stats = await transactionDAO.getStats(userId, start, end);
   res.json(stats);
 });
 
