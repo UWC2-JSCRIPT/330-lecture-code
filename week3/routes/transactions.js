@@ -1,20 +1,20 @@
 const { Router } = require("express");
 const router = Router({ mergeParams: true });
 
-const transactionDAO = require('../daos/transaction');
+const transactionDAO = require("../daos/transaction");
 
 // Create
 router.post("/", async (req, res, next) => {
   const userId = req.params.userId;
   const transaction = req.body;
   transaction.userId = userId;
-  if (!transaction || JSON.stringify(transaction) === '{}' ) {
-    res.status(400).send('transaction is required');
+  if (!transaction || JSON.stringify(transaction) === "{}") {
+    res.status(400).send("transaction is required");
   } else {
     try {
       const savedtransaction = await transactionDAO.create(transaction);
-      res.json(savedtransaction); 
-    } catch(e) {
+      res.json(savedtransaction);
+    } catch (e) {
       res.status(500).send(e.message);
     }
   }
@@ -24,8 +24,11 @@ router.post("/", async (req, res, next) => {
 router.get("/stats", async (req, res, next) => {
   const userId = req.params.userId;
   const { start, end } = req.query;
-  // TODO populate stats with real data
-  const stats = {}
+  const stats = await transactionDAO.getStats(
+    userId,
+    new Date(start),
+    new Date(end)
+  );
   res.json(stats);
 });
 
@@ -58,10 +61,14 @@ router.put("/:id", async (req, res, next) => {
   const transactionId = req.params.id;
   const transaction = req.body;
   transaction.userId = userId;
-  if (!transaction || JSON.stringify(transaction) === '{}' ) {
+  if (!transaction || JSON.stringify(transaction) === "{}") {
     res.status(400).send('transaction is required"');
   } else {
-    const updatedtransaction = await transactionDAO.updateById(userId, transactionId, transaction);
+    const updatedtransaction = await transactionDAO.updateById(
+      userId,
+      transactionId,
+      transaction
+    );
     res.json(updatedtransaction);
   }
 });
@@ -73,7 +80,7 @@ router.delete("/:id", async (req, res, next) => {
   try {
     await transactionDAO.deleteById(userId, transactionId);
     res.sendStatus(200);
-  } catch(e) {
+  } catch (e) {
     res.status(500).send(e.message);
   }
 });

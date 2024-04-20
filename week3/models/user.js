@@ -1,15 +1,17 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema({
   name: { type: String, required: true },
-  userId: { type: String, required: true },
+  userId: { type: String, required: true, unique: true },
   settings: {
     useDarkMode: Boolean,
-    language: String
+    language: String,
   },
   contact: {
-    email: String
-  }
+    email: String,
+  },
 });
+
+userSchema.index({ name: "text", "contact.email": "text" });
 
 module.exports = mongoose.model("users", userSchema);
